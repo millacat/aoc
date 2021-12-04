@@ -70,7 +70,28 @@ let res = mult gamma epsilon
 prn res
 
 (* Part Two *)
+let rec filtering (counts : (int*int) List) (idx : int) (data : string List)
+    (pred : int -> int -> bool) : string List =
+    let countsIdx = counts.[idx..]
+    match countsIdx with
+    | (z,o)::_ ->
+        let newData = if pred z o
+                      then List.filter (fun (s: string) -> s.[idx] = '0') data
+                      else List.filter (fun (s: string) -> s.[idx] = '1') data
+        if newData.Length = 1
+        then newData
+        else
+            let newCounts = traverse <| List.map stringToCharList newData
+            filtering newCounts (idx+1) newData pred
+    | _ -> []
 
+let data' : string List = getData "3.txt" id
+let predOxy z o = z > o
+let predCO2 z o = o >= z
 
+let oxyGenRating = "0b" + (filtering counts 0 data' predOxy).Head
+let CO2Rating = "0b" + (filtering counts 0 data' predCO2).Head
 
+let res'' = mult oxyGenRating CO2Rating
+prn res''
 
