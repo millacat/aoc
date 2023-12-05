@@ -3,3 +3,5 @@ FSharp.Core.dll
 *.swp
 *.swo
 
+
+.fake
