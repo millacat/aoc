@@ -34,14 +34,14 @@ module part2 =
         if containedDigits.IsEmpty
         then part1.getCalibrationValue s
         else
-            let first,firstsIndex = containedDigits |> List.map (fun digit -> digit |> strToInt, s.IndexOf digit ) |> List.minBy snd
-            let last,lastsIndex   = containedDigits |> List.map (fun digit -> digit |> strToInt, s.LastIndexOf digit) |> List.maxBy snd
+            let first,firstsIndex = containedDigits |> List.map s.IndexOf |> List.zip containedDigits |> List.minBy snd
+            let last,lastsIndex = containedDigits |> List.map s.LastIndexOf |> List.zip containedDigits |> List.maxBy snd
             let tens =
                 let index = findFirstNumberIndex s in
-                if index < firstsIndex then part1.findFirst s |> int else first
+                if index < firstsIndex then part1.findFirst s |> int else first |> strToInt
             let ones =
                 let index = findLastNumberIndex s in
-                if index > lastsIndex then part1.findLast s |> int else last
+                if index > lastsIndex then part1.findLast s |> int else last |> strToInt
             10*tens+ones
     let execute =
         input
