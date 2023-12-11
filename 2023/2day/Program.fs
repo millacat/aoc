@@ -33,7 +33,7 @@ module parse =
 
     let (|Line|_|) (s : string) =
         match s with
-        | ParseRegex "Game\s+(\d+):\s+(.+)" [Integer id; Sets sets] ->
+        | ParseRegex "Game (\d+): (.+)" [Integer id; Sets sets] ->
             let rounds = sets.Split ";" |> List.ofArray
             in Some (id, rounds)
         | _ -> None
@@ -41,36 +41,34 @@ module parse =
     let getGameLine = function
         | Line line -> line
         | _ -> failwith "Bad input data"
-
-    let parseColor s =
+    
+    let (|ParseColor|_|) (s : string) =
         match s with
-        | ParseRegex "(\d+)\s+(red|blue|green)" [Integer n; Color color] -> Some (n, color)
+        | ParseRegex "(\d+) (red|blue|green)" [Integer n; Color color] -> Some (n, color)
         | _ -> None
 
-module part1 =
+    let getAmountOfColor = function
+        | ParseColor color -> color
+        | _ -> failwith "Bad input data"
 
-    let toGame id drawSets = {
-        id = id
-        sets = drawSets |> List.map (List.map Option.get)
-    }
+module part1 =
 
     let getAmountOfColors (set : string) = 
         set.Split ", "
         |> List.ofArray 
-        |> List.map parse.parseColor
+        |> List.map parse.getAmountOfColor
 
-    let gameRespectsLimit game = 
+    let gameRespectsLimit cubeSets = 
         let colorRespectsLimit (n, color) =
             match color with
             | Red -> n <= 12
             | Green -> n <= 13
             | Blue -> n <= 14
-        game.sets |> List.forall (List.forall colorRespectsLimit)
+        cubeSets |> List.forall (List.forall colorRespectsLimit)
 
     let getIdIfGameRespectsLimit (id, sets) =
         sets
         |> List.map getAmountOfColors
-        |> toGame id
         |> gameRespectsLimit
         |> fun respect -> if respect then id else 0
 
