@@ -90,9 +90,9 @@ module part2 =
                     | Red -> if n > red then (n, green, blue) else colors
                     | Green -> if n > green then (red, n, blue) else colors
                     | Blue -> if n > blue then (red, green, n) else colors)
+        |> fun (r,g,b) -> r*g*b
 
     let getSets = snd
-    let sumOfPower = fun sum (red,green,blue) -> sum + red*green*blue
 
     let execute =
         input
@@ -103,7 +103,7 @@ module part2 =
             >> List.concat 
             >> getMinimumNumberOfCubes
         )
-        |> List.fold sumOfPower 0
+        |> List.sum
 
 part1.execute |> prn
 part2.execute |> prn
