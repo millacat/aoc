@@ -52,6 +52,9 @@ module parse =
         | _ -> failwith "Bad input data"
 
 module part1 =
+    let redLimit = 12
+    let greenLimit = 13
+    let blueLimit = 14
 
     let getAmountOfColors (set : string) = 
         set.Split ", "
@@ -61,9 +64,9 @@ module part1 =
     let gameRespectsLimit cubeSets = 
         let colorRespectsLimit (n, color) =
             match color with
-            | Red -> n <= 12
-            | Green -> n <= 13
-            | Blue -> n <= 14
+            | Red -> n <= redLimit
+            | Green -> n <= greenLimit
+            | Blue -> n <= blueLimit
         cubeSets |> List.forall (List.forall colorRespectsLimit)
 
     let getIdIfGameRespectsLimit (id, sets) =
@@ -78,4 +81,29 @@ module part1 =
         |> List.map getIdIfGameRespectsLimit
         |> List.sum
 
+// Calculate sum of power of minimum sets allowing games
+module part2 =
+    let getMinimumNumberOfCubes cubeSets =
+        ((0,0,0), cubeSets) 
+        ||> List.fold (fun ((red,green,blue) as colors) (n, color) -> 
+                    match color with
+                    | Red -> if n > red then (n, green, blue) else colors
+                    | Green -> if n > green then (red, n, blue) else colors
+                    | Blue -> if n > blue then (red, green, n) else colors)
+
+    let getSets = snd
+    let sumOfPower = fun sum (red,green,blue) -> sum + red*green*blue
+
+    let execute =
+        input
+        |> List.map (
+            parse.getGameLine 
+            >> getSets
+            >> List.map part1.getAmountOfColors 
+            >> List.concat 
+            >> getMinimumNumberOfCubes
+        )
+        |> List.fold sumOfPower 0
+
 part1.execute |> prn
+part2.execute |> prn
