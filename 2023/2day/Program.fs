@@ -83,27 +83,31 @@ module part1 =
 
 // Calculate sum of power of minimum sets allowing games
 module part2 =
-    let getMinimumNumberOfCubes cubeSets =
-        ((0,0,0), cubeSets) 
-        ||> List.fold (fun ((red,green,blue) as colors) (n, color) -> 
-                    match color with
-                    | Red -> if n > red then (n, green, blue) else colors
-                    | Green -> if n > green then (red, n, blue) else colors
-                    | Blue -> if n > blue then (red, green, n) else colors)
-        |> fun (r,g,b) -> r*g*b
-
-    let getSets = snd
+    let getMaxNumberOfCubes cubeSets =
+        let getMaxNumber color = cubeSets |> List.filter (snd >> (=) color) |> List.maxBy fst |> fst
+        let red = getMaxNumber Red
+        let green = getMaxNumber Green
+        let blue = getMaxNumber Blue
+        red * green * blue
 
     let execute =
         input
         |> List.map (
             parse.getGameLine 
-            >> getSets
+            >> snd
             >> List.map part1.getAmountOfColors 
             >> List.concat 
-            >> getMinimumNumberOfCubes
+            >> getMaxNumberOfCubes
         )
         |> List.sum
 
 part1.execute |> prn
 part2.execute |> prn
+
+//     ((0,0,0), cubeSets) 
+//     ||> List.fold (fun ((red,green,blue) as colors) (n, color) -> 
+//                 match color with
+//                 | Red -> if n > red then (n, green, blue) else colors
+//                 | Green -> if n > green then (red, n, blue) else colors
+//                 | Blue -> if n > blue then (red, green, n) else colors)
+//    |> fun (r,g,b) -> r*g*b
