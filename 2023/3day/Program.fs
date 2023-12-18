@@ -1,8 +1,9 @@
 ﻿
 open System
+open System.Text.RegularExpressions
 
 let prn n = printfn $"%A{n}"
-let input = IO.File.ReadLines "input" |> Array.ofSeq
+let input = System.IO.File.ReadLines "input" |> Array.ofSeq
 let lineLength = input[0].Length
 type Point = { x : int; y : int }
 
@@ -34,34 +35,32 @@ let syms =
     |> getSymbolPositions
 
 syms |> prn
-syms[0] |> prn
 
 let left, right = (0, -1), (0, 1)
 let up, down = (-1, 0), (1, 0)
 let upleft, upright = (-1, -1), (-1, 1)
 let downleft, downright = (1, -1), (1, 1)
 let directions = [left; right; up; down; upleft; upright; downleft; downright]
-prn directions
 
 let addPositions (x1, y1) (x2, y2) = x1 + x2, y1 + y2
-let positionHasNumber (x, y) = input[x][y] |> Char.IsDigit
-
-positionHasNumber (0, 11) |> prn
+let positionHasDigit (x, y) = input[x][y] |> Char.IsDigit
 
 let positionsToCheck = 
     directions 
     |> List.map (addPositions syms[0]) 
 positionsToCheck |> prn
 
-let positionsWithNumber = positionsToCheck |> List.filter positionHasNumber
-positionsWithNumber |> prn
+let positionsWithDigit = positionsToCheck |> List.filter positionHasDigit
+positionsWithDigit |> prn
+
 input[0][22] |> prn
-let l0 = input[0]
+let firstLine = input[0]
 let n = lineLength - (lineLength-22)
 prn (lineLength, n)
 
-let sizes = [1, 2]
-
-let r = l0[n .. n + 2]
-
-// https://stackoverflow.com/questions/2633220/find-a-string-within-another-string-search-backwards
+let offset = 2
+let potential = firstLine[n-offset .. n+offset]
+let getNumber potential = let re = Regex @"\d+" in re.Match potential |> _.Value |> Int32.Parse
+prn (potential, firstLine)
+getNumber potential
+|> prn
