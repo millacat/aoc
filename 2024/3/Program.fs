@@ -1,12 +1,11 @@
 ﻿open System
 open System.Text.RegularExpressions
 
-let input = @"c:\Users\cami\Code\aoc\2024\3\input"
+//let input = @"c:\Users\cami\Code\aoc\2024\3\input"
+let input = "input"
 let readFile path = IO.File.ReadAllLines path
 let prn msg value = printfn $"{msg}: {value}"
-
 let data = input |> readFile
-prn "The input data" data // 6 lines
 
 (* Day 3 - Part 1 - YAY! *)
 
@@ -25,10 +24,11 @@ let (|ParseRegex|_|) regex str =
    then Some (List.tail [ for x in m.Groups -> x.Value ])
    else None
 
-let rec parseMultipliers acc = function
+let rec parseMultipliers keep input =
+    match input with
     | ParseRegex "mul\((\d{1,3}),(\d{1,3})\)(.*)" [ Integer x; Integer y; rest ] -> 
-        parseMultipliers (x * y + acc) rest
-    | _ -> acc
+        parseMultipliers (x * y + keep) rest
+    | _ -> keep
 
 data
 |> Array.map ( parseMultipliers 0 )
@@ -37,35 +37,32 @@ data
 
 (* Day 3 - Part 2 - WOW! *)
 
-// The do() instruction enables future mul instructions.
-// The don't() instruction disables future mul instructions.
+// The do() instruction enables future mul instructions
+// The don't() instruction disables future mul instructions
 
-// let parseDo = function
-//     | ParseRegex "do\(\)" [ rest ] -> true, rest
+let rec parseDont keep = function
+    | ParseRegex "(.*?)don't\\(\\)(.*)" [ beforeDont; afterDont ] -> 
+        parseDo (keep + beforeDont) afterDont
+    | _ -> keep + input
 
-// let parseDont = function
-//     | ParseRegex "don't\(\)" [ rest ] -> false, rest
-
-
-
-// WORK IN PROGRESS. DOES NOT WORK.
-let rec parseInstructionsMultipliers enabled acc input =
-    match input with
-    | ParseRegex "do\(\)(.*)" [ rest ] -> 
-        printfn $"match do()"
-        parseInstructionsMultipliers true 10 rest
-    | ParseRegex "don't\(\)(.*)" [ rest ] ->
-        printfn $"match don't()"
-        parseInstructionsMultipliers true 20 rest
-
-    | ParseRegex "mul\((\d{1,3}),(\d{1,3})\)" [ Integer x; Integer y; rest ] -> 
-        printfn $"x: {x}, y: {y}"
-        parseInstructionsMultipliers enabled (x * y + acc) rest
-    | _ -> acc
+and parseDo keep = function
+    | ParseRegex "(.*?)do\(\)(.*)" [ _betweenDontAndDo; afterDo] ->
+        parseDont keep afterDo
+    | _ -> keep
 
 data
-|> Array.map (parseInstructionsMultipliers true 0)
-|> Array.iter (fun i -> printfn $"i: {i}")
-//|> Array.sum
-|> prn "What I got"
+|> Array.fold (+) ""
+|> parseDont ""
+|> parseMultipliers 0
+|> prn "Day 3, second part! Happy Holidays, peeps"
+
+
+// Tests part 2
+"912734don't()12938037do()109hsaiy21sakdon't()1203712078do()..12431"
+|> parseDont ""
+|> prn "\n"
+
+"912734don't()12938037do()109hsaiy21sakdon't()1203712078do()..1don't()2431"
+|> parseDont ""
+|> prn ""
 
