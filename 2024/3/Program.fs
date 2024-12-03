@@ -1,7 +1,6 @@
 ﻿open System
 open System.Text.RegularExpressions
 
-//let input = @"c:\Users\cami\Code\aoc\2024\3\input"
 let input = "input"
 let readFile path = IO.File.ReadAllLines path
 let prn msg value = printfn $"{msg}: {value}"
@@ -9,7 +8,7 @@ let data = input |> readFile
 
 (* Day 3 - Part 1 - YAY! *)
 
-// Sequences like mul(4*, mul(6,9!, ?(12,34), or mul ( 2 , 4 ) do nothing.
+// Sequences like mul(4*, mul(6,9!, ?(12,34), or mul ( 2 , 4 ) do nothing
 // xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5)) has 4 operations
 
 let (|Integer|_|) (str: string) =
@@ -43,7 +42,7 @@ data
 let rec parseDont keep = function
     | ParseRegex "(.*?)don't\\(\\)(.*)" [ beforeDont; afterDont ] -> 
         parseDo (keep + beforeDont) afterDont
-    | _ -> keep + input
+    | input -> keep + input
 
 and parseDo keep = function
     | ParseRegex "(.*?)do\(\)(.*)" [ _betweenDontAndDo; afterDo] ->
@@ -57,7 +56,7 @@ data
 |> prn "Day 3, second part! Happy Holidays, peeps"
 
 
-// Tests part 2
+(* Tests part 2 *)
 "912734don't()12938037do()109hsaiy21sakdon't()1203712078do()..12431"
 |> parseDont ""
 |> prn "\n"
