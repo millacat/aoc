@@ -1,4 +1,4 @@
-open System
+﻿open System
 
 let data  = IO.File.ReadAllLines "input"
 let prn msg value = printfn $"{msg}: {value}"
@@ -14,14 +14,14 @@ let parseData (data : string array) =
                 let newRules =
                     let left = s[..1] |> int16
                     let right = s[3..] |> int16
-                    rules |> 
-                    Map.add left (
+                    rules
+                    |> Map.add left (
                         match Map.tryFind left rules with
                         | None -> Set.empty.Add right
                         | Some rs -> rs.Add right
                     )
                 (newRules, updates)
-            else 
+            else
             if isUpdate s
             then
                 let update = s.Split([|','|]) |> Array.map int16 |> List.ofArray
@@ -54,7 +54,7 @@ let fixOrder (rules : Map<int16,Set<int16>>) update =
         | [] -> []
         | p :: pages ->
             let rightOrder, wrongOrder = pages |> List.partition rules[p].Contains
-            if wrongOrder.IsEmpty 
+            if wrongOrder.IsEmpty
             then p :: build rightOrder 
             else build (wrongOrder @ [p] @ rightOrder)
 
