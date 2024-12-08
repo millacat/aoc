@@ -1,4 +1,4 @@
-﻿open System
+open System
 
 let data  = IO.File.ReadAllLines "input"
 let prn msg value = printfn $"{msg}: {value}"
@@ -52,7 +52,7 @@ updates
 let fixOrder (rules : Map<int16,Set<int16>>) update =
     let rec build = function
         | [] -> []
-        | p :: pages -> // skal igennem alle p's. Gor jeg ikke nu.
+        | p :: pages ->
             let rightOrder, wrongOrder = pages |> List.partition rules[p].Contains
             if wrongOrder.IsEmpty 
             then p :: build rightOrder 
