@@ -24,7 +24,7 @@ let parseData (data : string array) =
             else
             if isUpdate s
             then
-                let update = s.Split([|','|]) |> Array.map int16 |> List.ofArray
+                let update = s.Split ',' |> Array.map int16 |> List.ofArray
                 (rules, update :: updates)
             else rules, updates
         ) (Map.empty, [])
